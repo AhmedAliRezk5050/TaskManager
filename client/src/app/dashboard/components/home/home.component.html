@@ -6,7 +6,11 @@
   <div class="flex flex-col md:flex-row gap-6">
     <!-- To Do Column -->
     <div class="flex-1 bg-white p-4 rounded-lg shadow-md">
-      <h2 class="text-xl font-semibold mb-3">To Do</h2>
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl font-semibold">To Do</h2>
+        <button pButton icon="pi pi-plus" class="p-button-rounded p-button-text text-blue-400"
+                (click)="openNewTaskDialog(1)"></button>
+      </div>
       <div pDroppable (onDrop)="moveTask(1)" class="min-h-[200px] p-2 bg-gray-50 rounded-md">
         <div *ngFor="let task of todoPagedTasks.items"
              pDraggable
@@ -16,8 +20,12 @@
           <p class="text-gray-600 text-sm">{{ task.description }}</p>
           <p class="text-xs text-gray-500">Due: {{ task.dueDate | date:'short' }}</p>
 
+          <!-- Edit Button -->
+          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text text-green-500"
+                  (click)="openEditTaskDialog(task)"></button>
+
           <!-- Delete Button -->
-          <button pButton icon="pi pi-trash" class="absolute top-2 right-2 p-button-rounded p-button-text text-red-500"
+          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text text-red-500"
                   (click)="confirmDelete(task)"></button>
         </div>
       </div>
@@ -25,7 +33,11 @@
 
     <!-- In Progress Column -->
     <div class="flex-1 bg-white p-4 rounded-lg shadow-md">
-      <h2 class="text-xl font-semibold mb-3">In Progress</h2>
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl font-semibold">In Progress</h2>
+        <button pButton icon="pi pi-plus" class="p-button-rounded p-button-text text-blue-400"
+                (click)="openNewTaskDialog(2)"></button>
+      </div>
       <div pDroppable (onDrop)="moveTask(2)" class="min-h-[200px] p-2 bg-gray-50 rounded-md">
         <div *ngFor="let task of inProgressPagedTasks.items"
              pDraggable
@@ -35,8 +47,12 @@
           <p class="text-gray-600 text-sm">{{ task.description }}</p>
           <p class="text-xs text-gray-500">Due: {{ task.dueDate | date:'short' }}</p>
 
+          <!-- Edit Button -->
+          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text text-green-500"
+                  (click)="openEditTaskDialog(task)"></button>
+
           <!-- Delete Button -->
-          <button pButton icon="pi pi-trash" class="absolute top-2 right-2 p-button-rounded p-button-text text-red-500"
+          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text text-red-500"
                   (click)="confirmDelete(task)"></button>
         </div>
       </div>
@@ -44,7 +60,11 @@
 
     <!-- Done Column -->
     <div class="flex-1 bg-white p-4 rounded-lg shadow-md">
-      <h2 class="text-xl font-semibold mb-3">Done</h2>
+      <div class="flex justify-between items-center mb-3">
+        <h2 class="text-xl font-semibold">Done</h2>
+        <button pButton icon="pi pi-plus" class="p-button-rounded p-button-text text-blue-400"
+                (click)="openNewTaskDialog(3)"></button>
+      </div>
       <div pDroppable (onDrop)="moveTask(3)" class="min-h-[200px] p-2 bg-gray-50 rounded-md">
         <div *ngFor="let task of donePagedTasks.items"
              pDraggable
@@ -54,8 +74,12 @@
           <p class="text-gray-600 text-sm">{{ task.description }}</p>
           <p class="text-xs text-gray-500">Due: {{ task.dueDate | date:'short' }}</p>
 
+          <!-- Edit Button -->
+          <button pButton icon="pi pi-pencil" class="p-button-rounded p-button-text text-green-500"
+                  (click)="openEditTaskDialog(task)"></button>
+
           <!-- Delete Button -->
-          <button pButton icon="pi pi-trash" class="absolute top-2 right-2 p-button-rounded p-button-text text-red-500"
+          <button pButton icon="pi pi-trash" class="p-button-rounded p-button-text text-red-500"
                   (click)="confirmDelete(task)"></button>
         </div>
       </div>
@@ -64,4 +88,42 @@
 
   <!-- PrimeNG Confirmation Dialog -->
   <p-confirmDialog></p-confirmDialog>
+
+  <!-- Add Task Dialog -->
+  <p-dialog [(visible)]="newTaskDialogVisible" [modal]="true" header = "New Task" [closable]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [maximizable]="true">
+    <div class="flex flex-col gap-3">
+      <label class="font-semibold">Title</label>
+      <input type="text" pInputText [(ngModel)]="newTask.title" class="p-2 border rounded-md w-full"/>
+
+      <label class="font-semibold">Description</label>
+      <textarea pInputTextarea [(ngModel)]="newTask.description" class="p-2 border rounded-md w-full"></textarea>
+
+      <label class="font-semibold">Due Date</label>
+      <input type="date" pInputText [(ngModel)]="newTask.dueDate" class="p-2 border rounded-md w-full"/>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="newTaskDialogVisible = false"></button>
+      <button pButton label="Save" icon="pi pi-check" class="p-button-primary" (click)="createTask()"></button>
+    </ng-template>
+  </p-dialog>
+
+  <!-- Edit Task Dialog -->
+  <p-dialog [(visible)]="editTaskDialogVisible" [modal]="true" header = "Edit Task" [closable]="true" [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }" [style]="{ width: '50vw' }" [maximizable]="true">
+    <div class="flex flex-col gap-3">
+      <label class="font-semibold">Title</label>
+      <input type="text" pInputText [(ngModel)]="editableTask.title" class="p-2 border rounded-md w-full"/>
+
+      <label class="font-semibold">Description</label>
+      <textarea pInputTextarea [(ngModel)]="editableTask.description" class="p-2 border rounded-md w-full"></textarea>
+
+      <label class="font-semibold">Due Date</label>
+      <input type="date" pInputText [(ngModel)]="editableTask.dueDate" class="p-2 border rounded-md w-full"/>
+    </div>
+
+    <ng-template pTemplate="footer">
+      <button pButton label="Cancel" icon="pi pi-times" class="p-button-text" (click)="cancelEditTask()"></button>
+      <button pButton label="Save" icon="pi pi-check" class="p-button-primary" (click)="editTask()"></button>
+    </ng-template>
+  </p-dialog>
 </div>

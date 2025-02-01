@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DragDropModule} from "primeng/dragdrop";
-import {DatePipe, NgForOf} from "@angular/common";
+import {DatePipe, NgClass, NgForOf, NgIf} from "@angular/common";
 import {TasksService} from "../../services/tasks.service";
 import {IPagedList} from "../../../shared/models/paged-list";
 import {ITask} from "../../models/task.model";
@@ -8,6 +8,13 @@ import {TaskStatus} from "../../enums/task-status.enum";
 import {ButtonDirective} from "primeng/button";
 import {ConfirmDialogModule} from "primeng/confirmdialog";
 import {ConfirmationService} from "primeng/api";
+import {DialogModule} from "primeng/dialog";
+import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators} from "@angular/forms";
+import {InputTextModule} from "primeng/inputtext";
+import {CalendarModule} from "primeng/calendar";
+import {InputTextareaModule} from "primeng/inputtextarea";
+import {ICreateTaskRequest} from "../../models/create-task-request";
+import {IUpdateTaskRequest} from "../../models/update-task-request";
 
 @Component({
   selector: 'app-home',
@@ -17,7 +24,15 @@ import {ConfirmationService} from "primeng/api";
     NgForOf,
     DatePipe,
     ButtonDirective,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    DialogModule,
+    ReactiveFormsModule,
+    InputTextModule,
+    NgIf,
+    CalendarModule,
+    NgClass,
+    InputTextareaModule,
+    FormsModule
   ],
   providers: [ConfirmationService],
   templateUrl: './home.component.html',
@@ -27,10 +42,17 @@ export class HomeComponent implements OnInit{
 
   pagedTasks: IPagedList<ITask> = {items: [], totalCount: 0};
   draggedTask: ITask | null = null;
+  newTaskDialogVisible = false;
+  editTaskDialogVisible = false;
+
+  newTask: ICreateTaskRequest = { title: '', description: '', status: 1, dueDate: '' };
+  editableTask: IUpdateTaskRequest = { title: '', description: '', status: 1, dueDate: '' };
+  editableTaskId = 1;
 
   constructor(
     private tasksService: TasksService,
-    private confirmationService: ConfirmationService
+    private confirmationService: ConfirmationService,
+    private fb: FormBuilder
   ) { }
 
 
@@ -107,5 +129,52 @@ export class HomeComponent implements OnInit{
       error: () => {
       }
     });
+  }
+
+  openNewTaskDialog(status: number) {
+    this.newTask = { title: '', description: '', status, dueDate: new Date().toISOString().split('T')[0] };
+    this.newTaskDialogVisible = true;
+  }
+
+  createTask() {
+    if (!this.newTask.title.trim()) {
+      return;
+    }
+
+    this.tasksService.createTask(this.newTask).subscribe({
+      next: () => {
+        this.tasksService.getTasks(); // Refresh the task list
+        this.newTaskDialogVisible = false;
+      },
+      error: () => {
+      }
+    });
+  }
+
+  openEditTaskDialog(task: ITask) {
+    this.editableTask = task;
+    this.editableTaskId = task.id;
+    this.editableTask.dueDate = new Date(task.dueDate).toISOString().split('T')[0];
+    this.editTaskDialogVisible = true;
+  }
+
+  editTask() {
+    if (!this.editableTask.title.trim()) {
+      return;
+    }
+
+    this.tasksService.updateTask(this.editableTaskId, this.editableTask).subscribe({
+      next: () => {
+        this.tasksService.getTasks();
+        this.editTaskDialogVisible = false;
+      },
+      error: () => {
+      }
+    });
+  }
+
+  cancelEditTask() {
+    this.editTaskDialogVisible = false
+    this.tasksService.getTasks();
   }
 }
