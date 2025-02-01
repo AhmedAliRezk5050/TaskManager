@@ -5,6 +5,9 @@ import {TasksService} from "../../services/tasks.service";
 import {IPagedList} from "../../../shared/models/paged-list";
 import {ITask} from "../../models/task.model";
 import {TaskStatus} from "../../enums/task-status.enum";
+import {ButtonDirective} from "primeng/button";
+import {ConfirmDialogModule} from "primeng/confirmdialog";
+import {ConfirmationService} from "primeng/api";
 
 @Component({
   selector: 'app-home',
@@ -12,8 +15,11 @@ import {TaskStatus} from "../../enums/task-status.enum";
   imports: [
     DragDropModule,
     NgForOf,
-    DatePipe
+    DatePipe,
+    ButtonDirective,
+    ConfirmDialogModule
   ],
+  providers: [ConfirmationService],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -22,7 +28,10 @@ export class HomeComponent implements OnInit{
   pagedTasks: IPagedList<ITask> = {items: [], totalCount: 0};
   draggedTask: ITask | null = null;
 
-  constructor(public tasksService: TasksService) { }
+  constructor(
+    private tasksService: TasksService,
+    private confirmationService: ConfirmationService
+  ) { }
 
 
   ngOnInit(): void {
@@ -79,6 +88,24 @@ export class HomeComponent implements OnInit{
     this.draggedTask = task;
   }
 
+  confirmDelete(task: ITask) {
+    this.confirmationService.confirm({
+      message: `Are you sure you want to delete "${task.title}"?`,
+      header: 'Confirm Deletion',
+      icon: 'pi pi-exclamation-triangle',
+      accept: () => {
+        this.deleteTask(task.id!);
+      }
+    });
+  }
 
-
+  deleteTask(taskId: number) {
+    this.tasksService.deleteTask(taskId).subscribe({
+      next: () => {
+        this.tasksService.getTasks(); // Refresh task list
+      },
+      error: () => {
+      }
+    });
+  }
 }

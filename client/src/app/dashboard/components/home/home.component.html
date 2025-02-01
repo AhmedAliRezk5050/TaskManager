@@ -7,14 +7,18 @@
     <!-- To Do Column -->
     <div class="flex-1 bg-white p-4 rounded-lg shadow-md">
       <h2 class="text-xl font-semibold mb-3">To Do</h2>
-      <div pDroppable  (onDrop)="moveTask(1)" class="min-h-[200px] p-2 bg-gray-50 rounded-md">
+      <div pDroppable (onDrop)="moveTask(1)" class="min-h-[200px] p-2 bg-gray-50 rounded-md">
         <div *ngFor="let task of todoPagedTasks.items"
              pDraggable
              (onDragEnd)="onTaskDragged(task)"
-             class="p-3 mb-2 bg-white rounded-md shadow cursor-grab border-l-4 border-blue-500">
+             class="relative p-3 mb-2 bg-white rounded-md shadow cursor-grab border-l-4 border-blue-500">
           <h3 class="font-semibold">{{ task.title }}</h3>
           <p class="text-gray-600 text-sm">{{ task.description }}</p>
           <p class="text-xs text-gray-500">Due: {{ task.dueDate | date:'short' }}</p>
+
+          <!-- Delete Button -->
+          <button pButton icon="pi pi-trash" class="absolute top-2 right-2 p-button-rounded p-button-text text-red-500"
+                  (click)="confirmDelete(task)"></button>
         </div>
       </div>
     </div>
@@ -26,10 +30,14 @@
         <div *ngFor="let task of inProgressPagedTasks.items"
              pDraggable
              (onDragEnd)="onTaskDragged(task)"
-             class="p-3 mb-2 bg-white rounded-md shadow cursor-grab border-l-4 border-yellow-500">
+             class="relative p-3 mb-2 bg-white rounded-md shadow cursor-grab border-l-4 border-yellow-500">
           <h3 class="font-semibold">{{ task.title }}</h3>
           <p class="text-gray-600 text-sm">{{ task.description }}</p>
           <p class="text-xs text-gray-500">Due: {{ task.dueDate | date:'short' }}</p>
+
+          <!-- Delete Button -->
+          <button pButton icon="pi pi-trash" class="absolute top-2 right-2 p-button-rounded p-button-text text-red-500"
+                  (click)="confirmDelete(task)"></button>
         </div>
       </div>
     </div>
@@ -41,12 +49,19 @@
         <div *ngFor="let task of donePagedTasks.items"
              pDraggable
              (onDragEnd)="onTaskDragged(task)"
-             class="p-3 mb-2 bg-white rounded-md shadow cursor-grab border-l-4 border-green-500">
+             class="relative p-3 mb-2 bg-white rounded-md shadow cursor-grab border-l-4 border-green-500">
           <h3 class="font-semibold">{{ task.title }}</h3>
           <p class="text-gray-600 text-sm">{{ task.description }}</p>
           <p class="text-xs text-gray-500">Due: {{ task.dueDate | date:'short' }}</p>
+
+          <!-- Delete Button -->
+          <button pButton icon="pi pi-trash" class="absolute top-2 right-2 p-button-rounded p-button-text text-red-500"
+                  (click)="confirmDelete(task)"></button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- PrimeNG Confirmation Dialog -->
+  <p-confirmDialog></p-confirmDialog>
 </div>
