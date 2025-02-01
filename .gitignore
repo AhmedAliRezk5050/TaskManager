@@ -1,0 +1,51 @@
+# Node modules
+node_modules/
+
+# Build output for Angular
+dist/
+out-tsc/
+
+# Angular specific
+*.js
+*.js.map
+*.d.ts
+*.tgz
+
+# Compiled output for .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.dbmdl
+*.dbproj.schemaview
+
+# Visual Studio specific
+.vs/
+.vscode/
+*.sln.ide
+*.suo
+*.user
+*.userprefs
+
+# IDE specific files
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+coverage/
